@@ -9,12 +9,18 @@ app = dash.Dash()
 
 app.layout = html.Div(
     children=[
-        html.Div(
-            children="""
-        Symbol to graph:
-    """
-        ),
+        html.H2(children="""Symbol to graph:     """),
         dcc.Input(id="input", value="", type="text"),
+        html.Div(
+        children=[
+        html.H2(children="""Select Dates:"""),    
+        dcc.DatePickerRange(
+        id='date-picker-range',
+        start_date_placeholder_text='Start date',
+        end_date_placeholder_text='End date',
+        start_date='',
+        end_date=''
+    )]),
         html.Div(id="output-graph"),
     ]
 )
@@ -22,11 +28,14 @@ app.layout = html.Div(
 
 @app.callback(
     Output(component_id="output-graph", component_property="children"),
-    [Input(component_id="input", component_property="value")],
+    [Input(component_id="input", component_property="value"),
+    Input(component_id="date-picker-range", component_property="start_date"),
+    Input(component_id="date-picker-range", component_property="end_date")]
 )
-def update_value(input_data):
-    start = datetime.datetime(2015, 1, 1)
-    end = datetime.datetime.now()
+def update_value(input_data, start_date, end_date):
+    #start = datetime.datetime(2015, 1, 1)
+    start = start_date
+    end = end_date
     df = web.DataReader(input_data, "yahoo", start, end)
 
     return dcc.Graph(
